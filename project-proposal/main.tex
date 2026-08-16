@@ -9,19 +9,13 @@
 % bvraghav-tiet-ucs503p-article.sty
 % -----------------------------------------------------
 
-% Variable: Lab Instructor
 \makeatletter \newcommand{\BvrSetLabInstructor}[1]{%
   \gdef\Bvr@LabInstructor{#1}}
-% default
-\newcommand{\Bvr@LabInstructor}{Dr. Raghav %
-  B. Venkataramaiyer}
-% public accessor
+\newcommand{\Bvr@LabInstructor}{Prof. Asif}
 \newcommand{\BvrLabInstructorValue}{\Bvr@LabInstructor}
 \makeatother
 
-% Add subtitle
 \usepackage{titling}
-% -- Set title bold
 \pretitle{\begin{center}\bfseries\fontsize{18bp}{18bp}\selectfont}
 \makeatletter
 \newcommand{\BvrSubtitle}[1]{%
@@ -32,30 +26,29 @@
 }
 \makeatother
 
-% Hints in the section title(s)
 \newcommand{\BvrHint}[1]{%
   {\normalfont\normalsize\itshape\hfill #1}}
 
 % -----------------------------------------------------
 
-\title{Grievance-Resolution System for a Tier-2/3 City}
+\title{Adaptive Continuous Authentication \& Account-Takeover Detection Using Behavioral Intelligence}
 
-\BvrSetLabInstructor{Dr. Raghav B. Venkataramaiyer}
+\BvrSetLabInstructor{Prof. Asif}
 
 \BvrSubtitle{%
   Project Proposal for UCS503P  \\
   Submitted to: \BvrLabInstructorValue \\ \bfseries
-  Thapar Institute of Engineering and Technology% 
+  Thapar Institute of Engineering and Technology%
 }
 
 \author{
-  Vidya Vaidyanathan, CSED%
-  \thanks{Roll No: \texttt{1024030xxx}, %
-    Email: \texttt{vvaidhanathan\_be24\@thapar.edu}}
-  \and 
-  Bhanurekha Ganesan, CSED%
-  \thanks{Roll No: \texttt{1024030xxx}, %
-    Email: \texttt{bganesan\_be24\@thapar.edu}}
+  Anjali Kumari
+  \thanks{Roll No: \texttt{1024030457}, %
+    Email: \texttt{akumari\_be24\@thapar.edu}}
+  \and
+  Yatharth Kansal
+  \thanks{Roll No: \texttt{1024030456}, %
+    Email: \texttt{ykansal\_be24\@thapar.edu}}
 }
 
 \date{\today}
@@ -65,178 +58,134 @@
 
 \section{Higher-order goal%
   \BvrHint{\ldots secondary framing}}
-This project aims to improve sustainable urban
-governance by reducing the time and effort required to
-resolve citizen issues. While the topic is broader than
-any single municipality, the immediate engineering
-objective is to translate \emph{efficient public
-  service delivery} into a measurable, deployable
-software solution.
+This project strengthens session-level trust in authenticated systems
+by continuously verifying that the person behind the keyboard is
+still the legitimate user, not just at login. The engineering
+objective is to translate \emph{behavioral risk signals} into a
+measurable, deployable trust-scoring service.
 
 \section{Time-to-value %
 \BvrHint{\ldots primary heuristic}}
 \begin{itemize}[leftmargin=0.7cm]
-    \item We will deliver meaningful increments quickly by prototyping the core user workflow and validating it with users within a short iteration window.
-    \item We will prioritize fast feedback over perfection by using weekly iterations (and targeting CI-backed automation early) to reduce release friction.
-    \item Success is defined by what can be delivered and measured in the first iteration, then improved based on user feedback.
+    \item Deliver a working end-to-end pipeline early --- capture, baseline, live score --- before perfecting any one detection model.
+    \item Iterate weekly, starting with a single behavioral signal (keystroke dynamics) before fusing in more.
+    \item Success in the first iteration is a live 0--100 trust score for one signal; later iterations add signals and refine accuracy.
 \end{itemize}
 
 \section{Problem Statement}
-Citizens in a tier-2/3 Indian city face delays and uncertainty when reporting local issues (e.g., streetlight outages, water leakage, garbage accumulation, road potholes). Common pain points include:
+Traditional authentication is a one-time gate: credentials and MFA
+are checked once at login, after which the session is marked
+``trusted'' and left unmonitored. This gap lets attackers exploit:
 \begin{itemize}[leftmargin=0.7cm]
-    \item \textbf{Fragmentation:} complaints are often made via multiple channels (calls, social media, paper forms), causing lost context.
-    \item \textbf{Low transparency:} citizens cannot easily see the status of their complaint (e.g., ``received'', ``assigned'', ``in progress'', ``resolved'').
-    \item \textbf{Slow coordination:} departments/field teams lack a unified, trackable workflow with clear ownership.
-    \item \textbf{Poor data quality:} duplicate or incomplete reports force rework and extend resolution time.
+    \item \textbf{Session hijacking:} a stolen token inherits full trust without presenting credentials.
+    \item \textbf{Unattended workstations:} a logged-in session can be used by anyone physically present.
+    \item \textbf{Binary trust:} sessions are simply ``trusted'' or not, with no way to react as risk builds mid-session.
 \end{itemize}
-
-\textbf{Why this matters now (contextual relevance):} In an urban setting with limited staff bandwidth, even small process improvements can noticeably reduce resolution delays and repeated submissions.
+Privilege escalation and data exfiltration during an already-authenticated
+session routinely bypass login-time defenses, since nothing re-checks
+identity once the door is open.
 
 \section{Proposed Solution %
 \BvrHint{\ldots Software Proposition}}
 \subsection{Overview}
-Build a \textbf{web-based} ``Grievance-to-Resolution'' system with the following components:
-\begin{itemize}[leftmargin=0.7cm]
-    \item \textbf{Citizen submission portal:} users submit an issue with photo (optional), category, and locality/ward.
-    \item \textbf{Automated triage:} basic duplicate detection and completeness checks.
-    \item \textbf{Department workflow:} assign issues to relevant department/team and update statuses.
-    \item \textbf{Status transparency:} citizens track status and receive notifications when resolved.
-    \item \textbf{Admin/ops dashboard:} performance summaries (resolution time, backlog).
-\end{itemize}
+Build a \textbf{continuous, adaptive trust engine} that fuses
+behavioral, system, and contextual signals into a single live
+session-trust score (0--100), and reacts automatically as it changes:
+\textbf{80--100} continue normally, \textbf{60--79} monitor closely,
+\textbf{40--59} step-up MFA, \textbf{$<$40} restrict/alert.
+Components: client-side signal capture (keystroke, mouse, app usage),
+a baseline \& fusion engine, anomaly/sequence detection, and the
+trust-scoring service driving these responses.
 
 \subsection{Core workflow}
 \begin{enumerate}[leftmargin=0.7cm]
-    \item Citizen creates a complaint and receives a complaint ID immediately.
-    \item System validates completeness and suggests possible duplicates (lightweight similarity on text/category and approximate location).
-    \item Department staff update status (Received $\rightarrow$ Assigned $\rightarrow$ In Progress $\rightarrow$ Resolved).
-    \item Citizen views status updates and resolution notes.
+    \item User authenticates normally; the session begins with an initial trust score.
+    \item A client agent streams behavioral/system events to the backend.
+    \item The fusion engine compares events against the user's baseline and updates the score in real time.
+    \item The system acts per the current score band (monitor, step-up MFA, or restrict/alert).
 \end{enumerate}
-
-\subsection{Operational constraints for an educational, tier-2/3 setting}
-\begin{itemize}[leftmargin=0.7cm]
-    \item Keep the solution usable on low-to-mid range devices via responsive web design.
-    \item Avoid dependence on advanced research algorithms; focus on workflow, automation, and system correctness.
-    \item Design for deployability using common web hosting and managed databases.
-\end{itemize}
 
 \section{Solution Approach %
 \BvrHint{\ldots Engineering focus}}
-This is an engineering course project, so we focus on scalable administrative and workflow aspects rather than novel algorithm research.
-
-\subsection{Duplicate/quality assistance %
-\BvrHint{\ldots non-research}}
-Duplicate detection will be heuristic-based:
+This is an engineering/applied-ML course project, so we focus on a
+working, evaluable pipeline rather than novel research in behavioral
+biometrics.
 \begin{itemize}[leftmargin=0.7cm]
-    \item Normalize text (category + short description keywords).
-    \item Use a simple similarity measure (e.g., token overlap / TF-IDF cosine with threshold) without claiming state-of-the-art.
-    \item Show top candidate duplicates to staff for decision; never fully auto-delete or auto-reject.
-\end{itemize}
-
-\subsection{Web architecture %
-\BvrHint{\ldots web-based solution}}
-A typical 3-tier web architecture:
-\begin{itemize}[leftmargin=0.7cm]
-    \item \textbf{Frontend:} responsive UI for citizens and staff (status pages, submission form, dashboard).
-    \item \textbf{Backend API:} authentication, complaint submission, status transitions, assignment logic.
-    \item \textbf{Database:} store users, complaints, status history, attachments metadata.
-\end{itemize}
-
-\subsection{CI/CD and fast delivery enabler}
-CI/CD will be used to:
-\begin{itemize}[leftmargin=0.7cm]
-    \item Automatically build and run tests on every change.
-    \item Produce repeatable deployment artifacts to staging.
-    \item Enable safe and frequent releases of incremental features.
+    \item \textbf{Signal modeling:} start with tractable features (keystroke dwell/flight time, mouse velocity); use lightweight statistical or one-class-classifier baselines before heavier models. Anomaly scores feed the response layer --- never auto-terminate on one weak signal.
+    \item \textbf{Architecture:} a client agent (capture), a scoring backend API (baselines, scoring, responses), and a database (baselines, event history, score timelines).
+    \item \textbf{CI/CD:} automated build/test on every change, repeatable staging deploys, enabling safe frequent releases as signals are added.
 \end{itemize}
 
 \section{Evaluation Criterion %
 \BvrHint{\ldots measurable and attributable}}
-We define success using measurable metrics tied to the core workflow.
+\subsection{Primary metric}
+\textbf{Detection latency:} time between an injected anomalous
+behavior (simulated takeover) and the score crossing into the
+step-up/restrict band. Target: a small, bounded number of
+events during pilot testing, measured from event vs.\ score-change
+timestamps.
 
-\subsection{Primary evaluation metric}
-\textbf{Time-to-acknowledgement (TTA):} time between complaint submission and ``Received/Assigned'' status creation in the system.
+\subsection{Secondary metrics}
 \begin{itemize}[leftmargin=0.7cm]
-    \item Target: median TTA $\le$ 2 hours during pilot window.
-    \item Attribution: measured from database timestamps (submission vs. first status update by staff).
-\end{itemize}
-
-\subsection{Secondary evaluation metrics}
-\begin{itemize}[leftmargin=0.7cm]
-    \item \textbf{Resolution time reduction:} reduce time-to-resolved compared to baseline process (even if baseline is collected via survey).
-    \item \textbf{Duplicate rate:} percentage of complaints flagged as duplicates and resolved without rework.
-    \item \textbf{User clarity:} citizen-reported clarity of status using a simple 1--5 feedback question.
-    \item \textbf{Reliability:} availability of staging/production for login and submission during business hours (e.g., $\ge$ 99\% uptime in pilot).
+    \item \textbf{False-positive / false-negative rate} of the score bands.
+    \item \textbf{Baseline convergence time} for a new user.
+    \item \textbf{Reliability} of the scoring service during pilot/demo sessions.
 \end{itemize}
 
 \subsection{Pilot validation plan %
 \BvrHint{\ldots high-level}}
-\begin{itemize}[leftmargin=0.7cm]
-    \item Recruit 10--20 pilot users (citizens) and 3--5 staff roles (department simulation if real staff unavailable).
-    \item Compare metrics before/after within the iteration window by logging baseline estimates via short interviews or existing process observations.
-\end{itemize}
+Recruit a small group of pilot users to build genuine baselines, then
+simulate takeovers (a second person continuing a logged-in session)
+to test detection latency and false-negative rate across iterations.
 
 \section{Scalability %
 \BvrHint{\ldots with foresight}}
-The proposition should scale in both theoretical and practical senses.
-
-\begin{enumerate}[leftmargin=0.7cm]
-    \item \textbf{Scalable (theoretically):} The system should support growth in number of complaints and concurrent dashboard usage by:
-    \begin{itemize}[leftmargin=0.7cm]
-        \item decoupling components (frontend/backend),
-        \item enabling pagination and indexing for common queries,
-        \item using stateless API design.
-    \end{itemize}
-    
-    \item \textbf{Operationally deployable (practically):} The system should run on common web hosting:
-    \begin{itemize}[leftmargin=0.7cm]
-        \item managed database,
-        \item containerized or platform-hosted deployment,
-        \item CI/CD pipeline for staging/production.
-    \end{itemize}
-\end{enumerate}
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Theoretically:} decouple signal capture from scoring, process events via a queue/stream, and keep the scoring API stateless where feasible.
+    \item \textbf{Practically:} run on common infrastructure --- managed database, containerized/platform-hosted deployment, CI/CD for staging/production.
+\end{itemize}
 
 \section{Engine availability heuristic}
-A mature set of ``engines'' (tooling/services) is available to implement this as a web-based project:
-\begin{itemize}[leftmargin=0.7cm]
-    \item Web framework for REST APIs and templated/reactive pages.
-    \item Managed relational or document database.
-    \item Authentication approach (token-based or session-based).
-    \item Object storage for optional attachments (or local storage for pilot).
-    \item Test framework for unit/integration tests.
-    \item CI runner and staging deployment target.
-\end{itemize}
-We will use these mature components to focus on workflow design, correctness, and measurement rather than inventing new infrastructure.
+Mature tooling covers this project's needs: a web/backend framework
+for the API and dashboard, a managed database for event/session
+storage, classical ML libraries for baselines and anomaly detection,
+browser/desktop APIs for keystroke and mouse capture, a test
+framework, and a CI runner with staging target. We use these to focus
+on signal design, fusion logic, and evaluation.
 
 \section{Project scope and deliverables %
 \BvrHint{\ldots iteration-friendly}}
-\subsection{Initial deliverable %
-\BvrHint{\ldots first iteration}}
+\subsection{Initial deliverable}
 \begin{itemize}[leftmargin=0.7cm]
-    \item Citizen submission form + complaint ID generation
-    \item Staff workflow: update status and assignment
-    \item Citizen status page: view timeline/history
-    \item Basic logging and timestamps for TTA measurement
-    \item CI: build + backend unit tests + linting
-    \item CD to staging with a single command or pipeline job
+    \item Client-side capture of keystroke dynamics; baseline for a single test user
+    \item Real-time trust-score computation (0--100) with a minimal live dashboard
+    \item CI: build + backend unit tests + linting; CD to staging
 \end{itemize}
 
 \subsection{Subsequent deliverables}
 \begin{itemize}[leftmargin=0.7cm]
-    \item Lightweight duplicate suggestions with staff review
-    \item Notification layer (email/SMS optional in later iteration; can start with in-app notifications)
-    \item Admin dashboard for metrics and backlog
-    \item Improved search/filtering and indexed queries for scale readiness
+    \item Mouse dynamics and app/process usage signals, fused into one score
+    \item Adaptive response tiers wired to real actions (step-up MFA, session restriction)
+    \item Anomaly vs.\ attack-chain (sequence-level) detection
+    \item Pilot evaluation dashboard for detection latency and error rates
 \end{itemize}
 
 \section{Risks and mitigations}
 \begin{itemize}[leftmargin=0.7cm]
-    \item \textbf{Data privacy / consent:} minimize collected data; keep attachments optional; store only what is needed.
-    \item \textbf{Staff adoption:} provide an easy UI for status updates; keep workflow steps minimal; include shortcuts.
-    \item \textbf{Evaluation measurement ambiguity:} instrument timestamps and define clear status transitions before development begins.
-    \item \textbf{Operational issues in pilot:} use staging early; ensure CI/CD produces repeatable deployments.
+    \item \textbf{Privacy/consent:} collect only what is needed, anonymize where possible, get informed pilot-user consent.
+    \item \textbf{Baseline cold-start:} use a conservative initial score and a defined learning period for new users.
+    \item \textbf{False positives frustrating users:} keep step-up MFA lightweight; tune thresholds from pilot feedback.
+    \item \textbf{Measurement ambiguity:} define score bands and log all timestamps needed for detection-latency measurement before development begins.
 \end{itemize}
 
 \section{Summary}
-This project proposes a deployable web platform to reduce grievance handling delays in a tier-2/3 city context. It meets the course criteria by emphasizing time-to-value through rapid iterations, implementing CI/CD to support frequent safe releases, and using measurable evaluation criteria (especially time-to-acknowledgement). It remains focused on engineering workflow and scalability readiness rather than research-driven novelty.
+This project proposes a continuous, adaptive authentication system
+that scores session trust in real time from behavioral, system, and
+contextual signals, reacting through tiers from passive monitoring to
+session restriction. It emphasizes time-to-value through
+signal-by-signal iteration, CI/CD for safe frequent releases, and
+measurable evaluation (detection latency, false-positive/negative
+rates) --- a working, evaluable pipeline rather than research-grade
+novelty in behavioral biometrics.
 
 \end{document}
