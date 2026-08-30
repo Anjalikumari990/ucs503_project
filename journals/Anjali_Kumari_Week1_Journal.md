@@ -1,4 +1,4 @@
-# JOURNAL 2 — [YOUR NAME]
+# JOURNAL — Anjali Kumari
 
 ## Week 1: Keystroke Feature Extraction and Behavioral Window Design
 
