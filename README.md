@@ -11,14 +11,14 @@ Use Python 3.12 or newer. From the repository root:
 ```sh
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-ui.txt
-.venv/bin/python app/main.py
+.venv/bin/python code/main.py
 ```
 
 Open **http://127.0.0.1:5000**. On Windows, use `.venv\Scripts\python` in place of `.venv/bin/python`.
 
 Prototype credentials: **anjali / password123**.
 
-If port 5000 is occupied, run `PORT=5050 .venv/bin/python app/main.py` and open port 5050 instead.
+If port 5000 is occupied, run `PORT=5050 .venv/bin/python code/main.py` and open port 5050 instead.
 
 ## Present the project
 
@@ -32,10 +32,10 @@ Monitoring is limited to the typing area. No mouse, app usage, or background key
 
 ## Backend integration
 
-- `app/main.py`: existing prototype login plus authenticated dashboard API endpoints; bounded, in-memory per-session history.
-- `app/engine_adapter.py`: a thin adapter around the existing `calculate_key_timings`, `create_behavior_windows`, and `evaluate_window` functions. It handles empty timing frames and preserves trust on idle windows.
-- `app/templates/` and `app/static/`: responsive sign-in and dashboard UI, keyboard timing capture, SVG gauge and history, and accessible status/error feedback. No external frontend libraries, CDNs, fonts, or build step are needed.
-- `code/`: teammate's original collector, feature extraction, model, scoring, and authentication modules. These remain unchanged.
+- `code/main.py`: existing prototype login plus authenticated dashboard API endpoints; bounded, in-memory per-session history.
+- `code/engine_adapter.py`: a thin adapter around the existing `calculate_key_timings`, `create_behavior_windows`, and `evaluate_window` functions. It handles empty timing frames and preserves trust on idle windows.
+- `code/templates/` and `code/static/`: responsive sign-in and dashboard UI, keyboard timing capture, SVG gauge and history, and accessible status/error feedback. No external frontend libraries, CDNs, fonts, or build step are needed.
+- `code/collectors/`, `code/src/`, `code/models/`, and `code/data/`: teammate's original keyboard pipeline, model, and recorded dataset. The web app now lives alongside these existing backend components.
 
 The displayed response thresholds follow the implemented backend: **trust ≥ 70: allow**, **40 ≤ trust < 70: prompt re-authentication**, **trust < 40: recommend locking**. These differ from the earlier four-band proposal. The interface reports the actual engine's recommendations; it does not claim to perform MFA or enforce session locking.
 

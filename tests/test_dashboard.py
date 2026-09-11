@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'app'))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'code'))
 from main import app, states
 from engine_adapter import evaluate, keyboard_features, recorded_windows
 from src.authentication.engine import AuthenticationEngine

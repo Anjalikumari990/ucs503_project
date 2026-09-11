@@ -6,7 +6,7 @@ import sys
 
 import pandas as pd
 
-CODE_ROOT = Path(__file__).resolve().parents[1] / 'code'
+CODE_ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(CODE_ROOT))
 
 from src.authentication.engine import evaluate_window
