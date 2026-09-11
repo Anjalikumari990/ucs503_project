@@ -1,0 +1,191 @@
+\documentclass[11pt,a4paper]{article} 
+\usepackage[margin=1in]{geometry} 
+\usepackage{hyperref} 
+\usepackage{enumitem} 
+\usepackage{graphicx} 
+\usepackage{xcolor} 
+ 
+\makeatletter 
+\newcommand{\BvrSetLabInstructor}[1]{% 
+  \gdef\Bvr@LabInstructor{#1}} 
+\newcommand{\Bvr@LabInstructor}{Prof. Asif} 
+\newcommand{\BvrLabInstructorValue}{\Bvr@LabInstructor} 
+\makeatother 
+ 
+\usepackage{titling} 
+\pretitle{\begin{center}\bfseries\fontsize{18bp}{18bp}\selectfont} 
+
+\makeatletter 
+\newcommand{\BvrSubtitle}[1]{% 
+  \posttitle{% 
+    \par\end{center} 
+    \begin{center}\large#1\end{center} 
+    \vskip 0.5em}% 
+} 
+\makeatother 
+ 
+\newcommand{\BvrHint}[1]{% 
+  {\normalfont\normalsize\itshape\hfill #1}} 
+ 
+\title{Adaptive Continuous Authentication \& Account-Takeover Detection Using Behavioral Intelligence} 
+ 
+\BvrSetLabInstructor{Prof. Asif} 
+ 
+\BvrSubtitle{% 
+  Project Proposal for UCS503P  \\ 
+  Submitted to: \BvrLabInstructorValue \\ \bfseries 
+  Thapar Institute of Engineering and Technology% 
+} 
+ 
+\author{ 
+  Anjali Kumari 
+  \thanks{Roll No: \texttt{1024030457}, % 
+    Email: \texttt{akumari\_be24\@thapar.edu}} 
+  \and 
+  Yatharth Kansal 
+  \thanks{Roll No: \texttt{1024030456}, % 
+    Email: \texttt{ykansal\_be24\@thapar.edu}} 
+  \and 
+  Ridhi Batra 
+  \thanks{Roll No: \texttt{1024030464}, % 
+    Email: \texttt{rbatra\_be24\@thapar.edu}} 
+} 
+ 
+\date{\today} 
+ 
+\begin{document} 
+\maketitle 
+ 
+\section{Higher-order goal% 
+  \BvrHint{\ldots secondary framing}} 
+This project strengthens session-level trust in authenticated systems 
+by continuously verifying that the person behind the keyboard is 
+still the legitimate user, not just at login. The engineering 
+objective is to translate \emph{behavioral risk signals} into a 
+measurable, deployable trust-scoring service. 
+ 
+\section{Time-to-value% 
+  \BvrHint{\ldots primary heuristic}} 
+\begin{itemize}[leftmargin=0.7cm] 
+    \item Deliver a working end-to-end pipeline early --- capture, baseline, live score --- before perfecting any one detection model. 
+    \item Iterate weekly, starting with a single behavioral signal (keystroke dynamics) before fusing in more. 
+    \item Success in the first iteration is a live 0--100 trust score for one signal; later iterations add signals and refine accuracy. 
+\end{itemize} 
+ 
+\section{Problem Statement} 
+Traditional authentication is a one-time gate: credentials and MFA 
+are checked once at login, after which the session is marked 
+``trusted'' and left unmonitored. This gap lets attackers exploit: 
+\begin{itemize}[leftmargin=0.7cm] 
+    \item \textbf{Session hijacking:} a stolen token inherits full trust without presenting credentials. 
+    \item \textbf{Unattended workstations:} a logged-in session can be used by anyone physically present. 
+    \item \textbf{Binary trust:} sessions are simply ``trusted'' or not, with no way to react as risk builds mid-session. 
+\end{itemize} 
+Privilege escalation and data exfiltration during an already-authenticated 
+session routinely bypass login-time defenses, since nothing re-checks 
+identity once the door is open. 
+ 
+\section{Proposed Solution% 
+\BvrHint{\ldots Software Proposition}} 
+\subsection{Overview} 
+Build a \textbf{continuous, adaptive trust engine} that fuses 
+behavioral, system, and contextual signals into a single live 
+session-trust score (0--100), and reacts automatically as it changes: 
+\textbf{80--100} continue normally, \textbf{60--79} monitor closely, 
+\textbf{40--59} step-up MFA, \textbf{$<$40} restrict/alert. 
+Components: client-side signal capture (keystroke, mouse, app usage), 
+a baseline \& fusion engine, anomaly/sequence detection, and the 
+trust-scoring service driving these responses. 
+ 
+\subsection{Core workflow} 
+\begin{enumerate}[leftmargin=0.7cm] 
+    \item User authenticates normally; the session begins with an initial trust score. 
+    \item A client agent streams behavioral/system events to the backend. 
+    \item The fusion engine compares events against the user's baseline and updates the score in real time. 
+    \item The system acts per the current score band (monitor, step-up MFA, or restrict/alert). 
+\end{enumerate} 
+ 
+\section{Solution Approach% 
+\BvrHint{\ldots Engineering focus}} 
+This is an engineering/applied-ML course project, so we focus on a 
+working, evaluable pipeline rather than novel research in behavioral 
+biometrics. 
+\begin{itemize}[leftmargin=0.7cm] 
+    \item \textbf{Signal modeling:} start with tractable features (keystroke dwell/flight time, mouse velocity); use lightweight statistical or one-class-classifier baselines before heavier models. Anomaly scores feed the response layer --- never auto-terminate on one weak signal. 
+    \item \textbf{Architecture:} a client agent (capture), a scoring backend API (baselines, scoring, responses), and a database (baselines, event history, score timelines). 
+    \item \textbf{CI/CD:} automated build/test on every change, repeatable staging deploys, enabling safe frequent releases as signals are added. 
+\end{itemize} 
+ 
+\section{Evaluation Criterion% 
+\BvrHint{\ldots measurable and attributable}} 
+\subsection{Primary metric} 
+\textbf{Detection latency:} time between an injected anomalous 
+behavior (simulated takeover) and the score crossing into the 
+step-up/restrict band. Target: a small, bounded number of 
+events during pilot testing, measured from event vs.\ score-change 
+timestamps. 
+ 
+\subsection{Secondary metrics} 
+\begin{itemize}[leftmargin=0.7cm] 
+    \item \textbf{False-positive / false-negative rate} of the score bands. 
+    \item \textbf{Baseline convergence time} for a new user. 
+    \item \textbf{Reliability} of the scoring service during pilot/demo sessions. 
+\end{itemize} 
+ 
+\subsection{Pilot validation plan% 
+\BvrHint{\ldots high-level}} 
+Recruit a small group of pilot users to build genuine baselines, then 
+simulate takeovers (a second person continuing a logged-in session) 
+to test detection latency and false-negative rate across iterations. 
+ 
+\section{Scalability% 
+\BvrHint{\ldots with foresight}} 
+\begin{itemize}[leftmargin=0.7cm] 
+    \item \textbf{Theoretically:} decouple signal capture from scoring, process events via a queue/stream, and keep the scoring API stateless where feasible. 
+    \item \textbf{Practically:} run on common infrastructure --- managed database, containerized/platform-hosted deployment, CI/CD for staging/production. 
+\end{itemize} 
+ 
+\section{Engine availability heuristic} 
+Mature tooling covers this project's needs: a web/backend framework 
+for the API and dashboard, a managed database for event/session 
+storage, classical ML libraries for baselines and anomaly detection, 
+browser/desktop APIs for keystroke and mouse capture, a test 
+framework, and a CI runner with staging target. We use these to focus 
+on signal design, fusion logic, and evaluation. 
+ 
+\section{Project scope and deliverables% 
+\BvrHint{\ldots iteration-friendly}} 
+\subsection{Initial deliverable} 
+\begin{itemize}[leftmargin=0.7cm] 
+    \item Client-side capture of keystroke dynamics; baseline for a single test user 
+    \item Real-time trust-score computation (0--100) with a minimal live dashboard 
+    \item CI: build + backend unit tests + linting; CD to staging 
+\end{itemize} 
+ 
+\subsection{Subsequent deliverables} 
+\begin{itemize}[leftmargin=0.7cm] 
+    \item Mouse dynamics and app/process usage signals, fused into one score 
+    \item Adaptive response tiers wired to real actions (step-up MFA, session restriction) 
+    \item Anomaly vs.\ attack-chain (sequence-level) detection 
+    \item Pilot evaluation dashboard for detection latency and error rates 
+\end{itemize} 
+ 
+\section{Risks and mitigations} 
+\begin{itemize}[leftmargin=0.7cm] 
+    \item \textbf{Privacy/consent:} collect only what is needed, anonymize where possible, get informed pilot-user consent. 
+    \item \textbf{Baseline cold-start:} use a conservative initial score and a defined learning period for new users. 
+    \item \textbf{False positives frustrating users:} keep step-up MFA lightweight; tune thresholds from pilot feedback. 
+    \item \textbf{Measurement ambiguity:} define score bands and log all timestamps needed for detection-latency measurement before development begins. 
+\end{itemize} 
+ 
+\section{Summary} 
+This project proposes a continuous, adaptive authentication system 
+that scores session trust in real time from behavioral, system, and 
+contextual signals, reacting through tiers from passive monitoring to 
+session restriction. It emphasizes time-to-value through 
+signal-by-signal iteration, CI/CD for safe frequent releases, and 
+measurable evaluation (detection latency, false-positive/negative 
+rates) --- a working, evaluable pipeline rather than research-grade 
+novelty in behavioral biometrics. 
+ 
+\end{document}

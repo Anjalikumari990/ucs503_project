@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+
+# Local behavioral data
+data/raw/
+data/processed/*
+!data/processed/keyboard_window_features.csv
+
+# Privacy/security
+data/key_hash_secret.bin
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment/secrets
+.env
+
+# IDE
+.vscode/

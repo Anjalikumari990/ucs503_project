@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+
+# Ignore root-level working data and caches
+/data/
+/src/
+/collectors/
+/models/
+
+# Code directory specific ignores
+code/data/raw/
+code/data/processed/*
+!code/data/processed/keyboard_window_features.csv
+code/data/key_hash_secret.bin
+code/venv/
+code/**/__pycache__/
+code/**/*.py[cod]
