@@ -18,6 +18,10 @@ Open **http://127.0.0.1:5000**. On Windows, use `.venv\Scripts\python` in place 
 
 Prototype credentials: **anjali / password123**.
 
+For Anjali's U02 desktop recordings and presentation rehearsal, follow the
+[recording and demo checklist](docs/recording-and-demo-checklist.md). The collector
+uses `code/requirements-collector.txt` and saves CSVs separately from the dashboard.
+
 If port 5000 is occupied, run `PORT=5050 .venv/bin/python code/main.py` and open port 5050 instead.
 
 ## Present the project

@@ -1,0 +1,2 @@
+# Desktop keyboard collector only. The dashboard has its own requirements file.
+pynput==1.8.2

@@ -6,19 +6,22 @@ import hmac
 import secrets
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 
 from pynput import keyboard
 
 
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+
 SECRET_FILE = os.path.join(
-    "data",
+    DATA_DIR,
     "key_hash_secret.bin"
 )
 
 
 def get_or_create_secret():
 
-    os.makedirs("data", exist_ok=True)
+    os.makedirs(DATA_DIR, exist_ok=True)
 
     if os.path.exists(SECRET_FILE):
 
@@ -77,8 +80,12 @@ def main():
 
     args = parser.parse_args()
 
+    for name, value in (("user", args.user), ("session", args.session)):
+        if not value or not all(c.isascii() and (c.isalnum() or c in "-_") for c in value):
+            parser.error(f"--{name} must contain only letters, numbers, hyphens, or underscores")
+
     output_dir = os.path.join(
-        "data",
+        DATA_DIR,
         "raw",
         "own",
         args.user,
@@ -92,13 +99,16 @@ def main():
         "keyboard.csv"
     )
 
+    if os.path.exists(output_file):
+        parser.error(f"Session already exists: {output_file}. Choose a new --session to preserve it.")
+
     secret = get_or_create_secret()
 
     session_start = time.perf_counter()
 
     with open(
         output_file,
-        "w",
+        "x",
         newline="",
         encoding="utf-8"
     ) as file:
