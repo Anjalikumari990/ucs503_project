@@ -1,0 +1,49 @@
+{% from 'icons.html' import icon %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf }}">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}"><title>Session overview · Adaptive Continuous Authentication</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script defer src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to dashboard</a>
+<aside class="sidebar">
+  <a class="brand" aria-label="Adaptive Continuous Authentication home" href="{{ url_for('dashboard') }}"><span class="brand-mark">{{ icon('shield') }}</span><span>ADAPTIVE<span class="brand-sub">CONTINUOUS AUTH</span></span></a>
+  <div class="nav-caption">WORKSPACE</div>
+  <nav aria-label="Dashboard sections">
+    <a class="nav-item selected" href="#overview" aria-label="Session overview">{{ icon('grid') }}<span>Session overview</span><span class="nav-dot"></span></a>
+    <a class="nav-item" href="#keyboard" aria-label="Keyboard activity">{{ icon('keyboard') }}<span>Keyboard activity</span></a>
+    <a class="nav-item" href="#events" aria-label="Audit events">{{ icon('list') }}<span>Audit events</span></a>
+  </nav>
+  <div class="sidebar-note"><span class="small-shield">{{ icon('shield') }}</span><h3>Trust beyond login.</h3><p>Continuous verification through your typing behavior.</p><span class="tiny-tag">KEYBOARD BIOMETRICS</span></div>
+  <div class="sidebar-footer"><span class="avatar">{{ username[0]|upper }}</span><div><strong>{{ username }}</strong><small>Prototype session</small></div><form action="{{ url_for('logout_user') }}" method="POST"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="icon-button" aria-label="Sign out" title="Sign out">{{ icon('logout') }}</button></form></div>
+</aside>
+<div class="workspace">
+  <header class="topbar"><div class="breadcrumb">Workspace <span>/</span> <strong>Session overview</strong></div><div class="topbar-right"><span class="system-indicator"><i class="dot" id="system-dot"></i><span id="system-label">System ready</span></span><span class="topbar-divider"></span><span class="privacy-label">{{ icon('lock') }} Keyboard only</span></div></header>
+  <main id="main">
+    <section class="page-heading" id="overview"><div><div class="eyebrow">ADAPTIVE CONTINUOUS AUTHENTICATION</div><h1>Session overview<span class="title-dot">.</span></h1><p>A closer look at the person behind the keyboard.</p></div><span class="outline-tag">{{ icon('activity') }} BEHAVIORAL INTELLIGENCE</span></section>
+    <div class="notice error-notice" id="error-banner" role="alert" hidden></div>
+    <section class="hero panel" aria-labelledby="session-title">
+      <div class="session-info"><div class="panel-kicker"><span class="dot"></span> CURRENT SESSION</div><div class="user-heading"><span class="avatar avatar-large">{{ username[0]|upper }}</span><div><span class="muted small">Signed in as</span><h2 id="session-title">{{ username }}</h2></div></div><div id="status-badge" class="status-badge neutral">{{ icon('shield') }}<span id="status-text">Awaiting first window</span></div><p id="status-description">Start monitoring to evaluate your typing behavior.</p><div class="session-details"><div><span>Authentication</span><strong>{{ icon('check') }} Login successful</strong></div><div><span>Signal source</span><strong>{{ icon('keyboard') }} Keystroke dynamics</strong></div></div></div>
+      <div class="gauge-container" id="gauge-container"><svg class="gauge" viewBox="0 0 280 230" role="img" aria-label="Trust score: awaiting keyboard data" id="gauge-svg"><defs><linearGradient id="gauge-gradient" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#24b893"/><stop offset="1" stop-color="#67e8b5"/></linearGradient></defs><path class="gauge-track" d="M 55 192 A 108 108 0 1 1 225 192"/><path id="gauge-value" class="gauge-value" d="M 55 192 A 108 108 0 1 1 225 192" pathLength="100" stroke-dasharray="0 100"/></svg><div class="gauge-label"><span class="gauge-eyebrow">SESSION TRUST</span><div><strong id="trust-score">—</strong><span class="gauge-denominator">/ 100</span></div><span id="gauge-caption">Waiting for keyboard data</span></div><div class="gauge-foot"><span class="dot"></span><span id="window-label">Evaluated every 10 seconds</span></div></div>
+      <div class="policy"><div class="panel-kicker">ADAPTIVE RESPONSE</div><h3 id="decision-title">Ready when you are</h3><p id="decision-description">Your trust score determines the engine’s recommended response.</p><div class="policy-row" data-band="TRUSTED"><span><i class="dot green"></i>Trusted</span><b>70–100</b></div><div class="policy-row" data-band="VERIFY"><span><i class="dot amber"></i>Verify identity</span><b>40–&lt;70</b></div><div class="policy-row" data-band="REJECT"><span><i class="dot red"></i>Restrict access</span><b>&lt;40</b></div><span class="policy-note">Response recommendations · prototype</span></div>
+    </section>
+    <section class="metrics" aria-label="Keyboard measurements">
+      <article class="metric-card panel"><div class="metric-top"><span class="metric-icon">{{ icon('activity') }}</span><h2>Typing cadence</h2><span class="metric-tag">RATE</span></div><div class="metric-value"><strong id="cadence">—</strong><span>chars / sec</span></div><div class="metric-bottom"><span>Character presses per second</span><span class="mini-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div></article>
+      <article class="metric-card panel"><div class="metric-top"><span class="metric-icon">{{ icon('clock') }}</span><h2>Key hold time</h2><span class="metric-tag">DWELL</span></div><div class="metric-value"><strong id="hold">—</strong><span>ms</span></div><div class="metric-bottom"><span>Average press-to-release time</span><span class="metric-detail" id="hold-std">σ — ms</span></div></article>
+      <article class="metric-card panel"><div class="metric-top"><span class="metric-icon">{{ icon('keyboard') }}</span><h2>Flight time & pauses</h2><span class="metric-tag">RHYTHM</span></div><div class="metric-value"><strong id="flight">—</strong><span>ms</span></div><div class="metric-bottom"><span>Average time between keys</span><span class="metric-detail" id="pauses">— pauses</span></div></article>
+    </section>
+    <div class="analysis-grid">
+      <section class="panel history-panel" aria-labelledby="history-title"><div class="panel-heading"><div><h2 id="history-title">Continuous trust history</h2><p>How session trust changes with each keyboard window</p></div><span class="soft-tag" id="history-source">THIS SESSION</span></div><div class="chart-wrap"><svg id="history-chart" viewBox="0 0 720 230" role="img" aria-label="No trust scores recorded yet"></svg><div class="chart-empty" id="chart-empty">{{ icon('activity') }}<strong>Your session story starts here</strong><span>Trust scores will appear after the first active window.</span></div></div><div class="chart-footer"><span><i class="dot green"></i> Trust score</span><span><i class="line-key green"></i> Trusted ≥ 70</span><span><i class="line-key amber"></i> Verify ≥ 40</span><span class="chart-axis-label">SESSION TIME</span></div></section>
+      <section class="panel events-panel" id="events" aria-labelledby="events-title"><div class="panel-heading"><div><h2 id="events-title">Recent audit events</h2><p>Authentication decisions, as they happen</p></div><span class="count-badge" id="event-count">0</span></div><div class="events-list" id="event-list"><div class="events-empty">{{ icon('list') }}<strong>No evaluations yet</strong><span>New decisions will be listed here.</span></div></div><div class="events-footer">{{ icon('clock') }}<span id="events-footer">Waiting for the first evaluation</span></div></section>
+    </div>
+    <section class="panel keyboard-panel" id="keyboard" aria-labelledby="keyboard-title"><div class="panel-heading"><div class="keyboard-heading"><span class="metric-icon">{{ icon('keyboard') }}</span><div><h2 id="keyboard-title">Keyboard activity</h2><p>Type naturally. Let your rhythm do the talking.</p></div></div><div class="monitor-controls"><button class="button button-secondary" id="replay-button">{{ icon('play') }} Replay recorded session</button><button class="button button-primary" id="monitor-button">{{ icon('activity') }} Start monitoring</button></div></div><div class="typing-content"><div class="typing-prompt"><span class="panel-kicker">TRY THIS PASSAGE, OR WRITE YOUR OWN</span><p>Security is more than a password. The rhythm of every keystroke tells a story, helping us recognize the person behind the screen.</p></div><label class="sr-only" for="typing-area">Keyboard monitoring area</label><textarea id="typing-area" placeholder="Start monitoring, then type here to see your trust score evolve…" spellcheck="false" autocomplete="off" autocapitalize="off" disabled></textarea></div><div class="typing-footer"><span>{{ icon('lock') }}<span id="capture-note">Only this typing area is monitored. Your text is never sent or saved.</span></span><span id="capture-status">{{ icon('clock') }}<span id="capture-label">10-second windows · 5 characters minimum</span></span></div><div class="window-progress" aria-hidden="true"><div id="window-progress"></div></div></section>
+    <footer class="page-footer"><span>{{ icon('shield') }} Adaptive Continuous Authentication</span><span>Anjali Kumari & Yatharth Kansal <i>·</i> UCS503 · Thapar Institute</span></footer>
+  </main>
+</div>
+<div class="sr-only" id="announcer" role="status" aria-live="polite"></div>
+</body>
+</html>
