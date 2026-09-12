@@ -1,76 +1,30 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{hyperref}
-\usepackage{enumitem}
 \usepackage{graphicx}
 \usepackage{xcolor}
 
-% -----------------------------------------------------
-% bvraghav-tiet-ucs503p-article.sty
-% -----------------------------------------------------
-
-\makeatletter \newcommand{\BvrSetLabInstructor}[1]{%
-  \gdef\Bvr@LabInstructor{#1}}
-\newcommand{\Bvr@LabInstructor}{Prof. Asif}
-\newcommand{\BvrLabInstructorValue}{\Bvr@LabInstructor}
-\makeatother
-
-\usepackage{titling}
-\pretitle{\begin{center}\bfseries\fontsize{18bp}{18bp}\selectfont}
-\makeatletter
-\newcommand{\BvrSubtitle}[1]{%
-  \posttitle{%
-    \par\end{center}
-    \begin{center}\large#1\end{center}
-    \vskip 0.5em}%
-}
-\makeatother
-
-\newcommand{\BvrHint}[1]{%
-  {\normalfont\normalsize\itshape\hfill #1}}
-
-% -----------------------------------------------------
-
-\title{Adaptive Continuous Authentication \& Account-Takeover Detection Using Behavioral Intelligence}
-
-\BvrSetLabInstructor{Prof. Asif}
-
-\BvrSubtitle{%
-  Project Proposal for UCS503P  \\
-  Submitted to: \BvrLabInstructorValue \\ \bfseries
-  Thapar Institute of Engineering and Technology%
-}
-
-\author{
-  Anjali Kumari
-  \thanks{Roll No: \texttt{1024030457}, %
-    Email: \texttt{akumari\_be24\@thapar.edu}}
-  \and
-  Yatharth Kansal
-  \thanks{Roll No: \texttt{1024030456}, %
-    Email: \texttt{ykansal\_be24\@thapar.edu}}
-  \and
-  Ridhi Batra
-  \thanks{Roll No: \texttt{1024030464}, %
-    Email: \texttt{rbatra\_be24\@thapar.edu}}
-}
-
-\date{\today}
-
+\title{\textbf{Adaptive Continuous Authentication}\\[0.5em]\large Account-Takeover Detection Using Behavioral Intelligence}
+\author{Anjali Kumari (1024030457)\\Yatharth Kansal (1024030456)\\Ridhi Batra (1024030464)}
+\date{Project Proposal for UCS503P\\Submitted to: Prof. Asif\\Thapar Institute of Engineering and Technology\\12 September 2026}
+\newcommand{\flowbox}[1]{\fbox{\parbox[c][0.65cm][c]{10cm}{\centering\small #1}}}
+\newcommand{\flowarrow}{\par\vspace{2pt}$\downarrow$\par\vspace{2pt}}
+\setlength{\emergencystretch}{2em}
 \begin{document}
 \maketitle
 
-\section{Higher-order goal%
-  \BvrHint{\ldots secondary framing}}
+\section*{Project Overview}
+Adaptive Continuous Authentication aims to detect changes in the person using an already-authenticated session through typing behavior. The current course prototype connects keyboard timing capture, feature extraction, an Isolation Forest model, a trust scorer, and a Flask dashboard. The wider signal-fusion and enforcement capabilities below are proposed extensions.
+
+\section{Higher-order goal}
 This project strengthens session-level trust in authenticated systems
 by continuously verifying that the person behind the keyboard is
 still the legitimate user, not just at login. The engineering
-objective is to translate \emph{behavioral risk signals} into a
+objective is to translate \textbf{behavioral risk signals} into a
 measurable, deployable trust-scoring service.
 
-\section{Time-to-value %
-\BvrHint{\ldots primary heuristic}}
-\begin{itemize}[leftmargin=0.7cm]
+\section{Time-to-value }
+\begin{itemize}
     \item Deliver a working end-to-end pipeline early --- capture, baseline, live score --- before perfecting any one detection model.
     \item Iterate weekly, starting with a single behavioral signal (keystroke dynamics) before fusing in more.
     \item Success in the first iteration is a live 0--100 trust score for one signal; later iterations add signals and refine accuracy.
@@ -80,7 +34,7 @@ measurable, deployable trust-scoring service.
 Traditional authentication is a one-time gate: credentials and MFA
 are checked once at login, after which the session is marked
 ``trusted'' and left unmonitored. This gap lets attackers exploit:
-\begin{itemize}[leftmargin=0.7cm]
+\begin{itemize}
     \item \textbf{Session hijacking:} a stolen token inherits full trust without presenting credentials.
     \item \textbf{Unattended workstations:} a logged-in session can be used by anyone physically present.
     \item \textbf{Binary trust:} sessions are simply ``trusted'' or not, with no way to react as risk builds mid-session.
@@ -89,8 +43,7 @@ Privilege escalation and data exfiltration during an already-authenticated
 session routinely bypass login-time defenses, since nothing re-checks
 identity once the door is open.
 
-\section{Proposed Solution %
-\BvrHint{\ldots Software Proposition}}
+\section{Proposed Solution }
 \subsection{Overview}
 Build a \textbf{continuous, adaptive trust engine} that fuses
 behavioral, system, and contextual signals into a single live
@@ -102,26 +55,86 @@ a baseline \& fusion engine, anomaly/sequence detection, and the
 trust-scoring service driving these responses.
 
 \subsection{Core workflow}
-\begin{enumerate}[leftmargin=0.7cm]
+\begin{enumerate}
     \item User authenticates normally; the session begins with an initial trust score.
     \item A client agent streams behavioral/system events to the backend.
     \item The fusion engine compares events against the user's baseline and updates the score in real time.
     \item The system acts per the current score band (monitor, step-up MFA, or restrict/alert).
 \end{enumerate}
 
-\section{Solution Approach %
-\BvrHint{\ldots Engineering focus}}
+\begin{figure}[htbp]
+\centering
+\flowbox{User signs in and starts keyboard monitoring}
+\flowarrow
+\flowbox{Capture press/release timing with HMAC key identifiers}
+\flowarrow
+\flowbox{Extract hold time, flight time, typing rate and pauses}
+\flowarrow
+\flowbox{Form 10-second windows and check activity}
+\flowarrow
+\flowbox{Score active windows; preserve previous trust while idle}
+\flowarrow
+\flowbox{Display trust score, recommendation and session history}
+\caption{End-to-end workflow of the current keyboard prototype.}
+\end{figure}
+
+\subsection{Current prototype and response policy}
+The implemented prototype uses keyboard input only. Browser monitoring is limited to the dashboard typing area; a separate desktop collector supports local recording. The model currently uses six active recorded windows, so its output is a demonstration of the pipeline, not measured identity accuracy. Login does not enroll a personal baseline.
+
+The current implementation uses three score bands: trust at least 70 allows the session, trust from 40 to below 70 recommends re-authentication, and trust below 40 recommends locking. These replace the earlier four-band design for the present demonstration. The dashboard reports recommendations; actual MFA and session-lock enforcement remain future work. Inactive windows preserve the previous score, with no score shown before the first active observation.
+
+\begin{figure}[htbp]
+\centering
+\setlength{\unitlength}{1mm}
+\begin{picture}(150,91)
+\put(40,78){\framebox(70,10){\small 10-second behavior window}}
+\put(75,78){\vector(0,-1){8}}
+\put(40,58){\framebox(70,12){\small At least 5 characters?}}
+\put(110,64){\vector(1,0){7}}
+\put(111,67){\makebox(7,4){\scriptsize No}}
+\put(117,56){\framebox(32,16){\shortstack{\small Hold previous\\\small trust score}}}
+\put(75,58){\vector(0,-1){9}}
+\put(77,51){\makebox(10,4){\scriptsize Yes}}
+\put(40,37){\framebox(70,12){\small Model inference and trust score}}
+\put(75,37){\line(0,-1){8}}
+\put(23,29){\line(1,0){104}}
+\put(23,29){\vector(0,-1){9}}
+\put(75,29){\vector(0,-1){9}}
+\put(127,29){\vector(0,-1){9}}
+\put(0,1){\framebox(46,19){\shortstack{\small Trust $\geq 70$\\\small Allow}}}
+\put(52,1){\framebox(46,19){\shortstack{\small $40 \leq$ trust $<70$\\\small Recommend re-auth}}}
+\put(104,1){\framebox(46,19){\shortstack{\small Trust $<40$\\\small Recommend lock}}}
+\end{picture}
+\caption{Activity handling and the implemented authentication decision flow.}
+\end{figure}
+
+\section{Solution Approach }
 This is an engineering/applied-ML course project, so we focus on a
 working, evaluable pipeline rather than novel research in behavioral
 biometrics.
-\begin{itemize}[leftmargin=0.7cm]
+\begin{itemize}
     \item \textbf{Signal modeling:} start with tractable features (keystroke dwell/flight time, mouse velocity); use lightweight statistical or one-class-classifier baselines before heavier models. Anomaly scores feed the response layer --- never auto-terminate on one weak signal.
     \item \textbf{Architecture:} a client agent (capture), a scoring backend API (baselines, scoring, responses), and a database (baselines, event history, score timelines).
     \item \textbf{CI/CD:} automated build/test on every change, repeatable staging deploys, enabling safe frequent releases as signals are added.
 \end{itemize}
 
-\section{Evaluation Criterion %
-\BvrHint{\ldots measurable and attributable}}
+\begin{figure}[htbp]
+\centering
+\flowbox{Browser UI: login, typing area, trust chart and decision log}
+\flowarrow
+\flowbox{Authenticated Flask API: input validation and session handling}
+\flowarrow
+\flowbox{Engine adapter: keyboard timings and behavioral windows}
+\flowarrow
+\flowbox{Saved Isolation Forest pipeline: anomaly inference}
+\flowarrow
+\flowbox{Trust scorer and decision engine: score and recommendation}
+\flowarrow
+\flowbox{API response to dashboard; bounded in-memory session history}
+\caption{Current system architecture. A database and additional signals are future extensions.}
+\end{figure}
+
+\section{Evaluation Criterion }
 \subsection{Primary metric}
 \textbf{Detection latency:} time between an injected anomalous
 behavior (simulated takeover) and the score crossing into the
@@ -130,23 +143,21 @@ events during pilot testing, measured from event vs.\ score-change
 timestamps.
 
 \subsection{Secondary metrics}
-\begin{itemize}[leftmargin=0.7cm]
+\begin{itemize}
     \item \textbf{False-positive / false-negative rate} of the score bands.
     \item \textbf{Baseline convergence time} for a new user.
     \item \textbf{Reliability} of the scoring service during pilot/demo sessions.
 \end{itemize}
 
-\subsection{Pilot validation plan %
-\BvrHint{\ldots high-level}}
+\subsection{Pilot validation plan }
 Recruit a small group of pilot users to build genuine baselines, then
 simulate takeovers (a second person continuing a logged-in session)
 to test detection latency and false-negative rate across iterations.
 
-\section{Scalability %
-\BvrHint{\ldots with foresight}}
-\begin{itemize}[leftmargin=0.7cm]
+\section{Scalability }
+\begin{itemize}
     \item \textbf{Theoretically:} decouple signal capture from scoring, process events via a queue/stream, and keep the scoring API stateless where feasible.
-    \item \textbf{Practically:} run on common infrastructure --- managed database, containerized/platform-hosted deployment, CI/CD for staging/production.
+    \item \textbf{Practically:} run on common infrastructure --- managed database, containerized deployment, CI/CD for staging/production.
 \end{itemize}
 
 \section{Engine availability heuristic}
@@ -157,17 +168,16 @@ browser/desktop APIs for keystroke and mouse capture, a test
 framework, and a CI runner with staging target. We use these to focus
 on signal design, fusion logic, and evaluation.
 
-\section{Project scope and deliverables %
-\BvrHint{\ldots iteration-friendly}}
+\section{Project scope and deliverables }
 \subsection{Initial deliverable}
-\begin{itemize}[leftmargin=0.7cm]
+\begin{itemize}
     \item Client-side capture of keystroke dynamics; baseline for a single test user
     \item Real-time trust-score computation (0--100) with a minimal live dashboard
     \item CI: build + backend unit tests + linting; CD to staging
 \end{itemize}
 
 \subsection{Subsequent deliverables}
-\begin{itemize}[leftmargin=0.7cm]
+\begin{itemize}
     \item Mouse dynamics and app/process usage signals, fused into one score
     \item Adaptive response tiers wired to real actions (step-up MFA, session restriction)
     \item Anomaly vs.\ attack-chain (sequence-level) detection
@@ -175,7 +185,7 @@ on signal design, fusion logic, and evaluation.
 \end{itemize}
 
 \section{Risks and mitigations}
-\begin{itemize}[leftmargin=0.7cm]
+\begin{itemize}
     \item \textbf{Privacy/consent:} collect only what is needed, anonymize where possible, get informed pilot-user consent.
     \item \textbf{Baseline cold-start:} use a conservative initial score and a defined learning period for new users.
     \item \textbf{False positives frustrating users:} keep step-up MFA lightweight; tune thresholds from pilot feedback.

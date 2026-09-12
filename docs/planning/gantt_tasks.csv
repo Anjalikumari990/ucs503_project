@@ -1,0 +1,21 @@
+ID,Task,Start week,End week,Status,Dependencies
+T01,Requirements and project scope,1,1,Completed,—
+T02,Proposal and system design,1,2,Completed,T01
+T03,Keyboard event collector,1,1,Completed,T01
+T04,HMAC identifiers and protected storage,1,1,Completed,T03
+T05,Hold / flight timing extraction,1,1,Completed,T04
+T06,10-second windows and activity flag,1,1,Completed,T05
+T07,Level 0 / Level 1 and use-case diagrams,2,2,Completed,T02
+T08,Project presentation,2,2,Completed,T02
+T09,Isolation Forest pipeline,3,3,Completed,T06
+T10,Trust mapping and decision engine,3,3,Completed,T09
+T11,Flask dashboard and live capture,3,3,Completed,T10
+T12,Replay and integration checks,3,3,Completed,T11
+T13,"Revised proposal, Level 2 DFD and schedule",3,3,Completed,"T07,T10"
+T14,Additional users and recording sessions,4,4,Planned,T12
+T15,Feature quality and held-out session split,4,4,Planned,T14
+T16,Retrain and evaluate baseline,5,5,Planned,T15
+T17,Takeover trials and threshold review,5,5,Planned,T16
+T18,Latency and false-accept / reject report,5,6,Planned,T17
+T19,Final report and slide update,6,6,Planned,T18
+T20,Demo rehearsal and submission preparation,6,6,Planned,T19
