@@ -1,6 +1,6 @@
 site_name: "Adaptive Continuous Authentication - UCS503P"
 site_description: "Adaptive Continuous Authentication & Account-Takeover Detection Using Keystroke Behavioral Intelligence"
-site_url: ""
+site_url: "https://anjalikumari990.github.io/ucs503_project/"
 
 plugins:
   - search
