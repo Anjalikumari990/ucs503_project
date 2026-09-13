@@ -8,3 +8,4 @@ if "%1"=="docs" (
 ) else (
     echo Usage: make [docs^|test^|run]
 )
+

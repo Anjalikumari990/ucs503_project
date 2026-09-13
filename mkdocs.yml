@@ -69,6 +69,7 @@ nav:
   - Overview: index.md
   - Project Selection: criteria-for-project-selection.md
   - Weekly Journals:
+      - "Consolidated Overview & PDF": journals/README.md
       - "Yatharth Kansal (1024030456)": journals/1024030456-yatharth/journal.md
       - "Anjali Kumari (1024030457)": journals/1024030457-anjali/journal.md
       - "Ridhi Batra (1024030464)": journals/1024030464-ridhi/journal.md
