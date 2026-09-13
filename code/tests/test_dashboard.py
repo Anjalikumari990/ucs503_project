@@ -4,7 +4,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'code'))
+CODE_DIR = Path(__file__).resolve().parents[1] if Path(__file__).resolve().parents[1].name == 'code' else Path(__file__).resolve().parents[1] / 'code'
+sys.path.insert(0, str(CODE_DIR))
 from main import app, states
 from engine_adapter import evaluate, keyboard_features, recorded_windows
 from src.authentication.engine import AuthenticationEngine

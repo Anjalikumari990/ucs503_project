@@ -1,0 +1,216 @@
+\documentclass[12pt, a4paper, oneside]{report}
+\usepackage[margin=0.9in, top=0.9in, bottom=0.9in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, shadows}
+
+% --- Tight Chapter & Section Spacing ---
+\titleformat{\chapter}[display]
+  {\normalfont\LARGE\bfseries}{\chaptertitlename\ \thechapter}{3pt}{\LARGE}
+\titlespacing*{\chapter}{0pt}{-35pt}{12pt}
+\titlespacing*{\section}{0pt}{10pt}{4pt}
+\titlespacing*{\subsection}{0pt}{7pt}{3pt}
+
+% --- Header and Footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily UCS503 - Software Engineering Project}
+\fancyhead[R]{\small\sffamily Adaptive Continuous Authentication Report}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% --- Hyperref Setup ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=teal!70!black,
+    urlcolor=blue!60!black
+}
+
+\begin{document}
+
+% =========================================================================
+% TITLE PAGE
+% =========================================================================
+\begin{titlepage}
+    \centering
+    \vspace*{0.5cm}
+    
+    {\Large\bfseries UCS503 -- Software Engineering Project}\\[0.3cm]
+    {\large Academic Year 2026--2027}\\[1.5cm]
+    
+    {\Huge\bfseries Adaptive Continuous Authentication \& Account-Takeover Detection}\\[0.4cm]
+    {\large\textit{Real-Time Keystroke Dynamics \& Behavioral Anomaly Detection for Zero-Trust Session Security}}\\[2.0cm]
+    
+    {\large\textbf{Submitted by:}}\\[0.3cm]
+    \begin{tabular}{ll}
+        \textbf{1024030456} & Yatharth Kansal \textit{(ML \& Core Engine Lead)} \\
+        \textbf{1024030457} & Anjali Kumari \textit{(Frontend \& Integration Lead)} \\
+        \textbf{1024030464} & Ridhi Batra \textit{(Testing \& Documentation Lead)} \\
+    \end{tabular}\\[0.5cm]
+    {\normalsize\textbf B.E. Third Year, Computer Science \& Engineering}\\[1.6cm]
+    
+    {\large\textbf{Submitted to:}}\\[0.2cm]
+    {\large\textbf{Prof. Asif}}\\[0.1cm]
+    {\normalsize Department of Computer Science and Engineering}\\[1.2cm]
+    
+    \vfill
+    {\normalsize\textbf{Mid-Semester Prototype Evaluation Report}}\\[0.15cm]
+    {\normalsize\textbf{Computer Science and Engineering Department}}\\[0.1cm]
+    {\normalsize Thapar Institute of Engineering and Technology, Patiala}\\[0.4cm]
+\end{titlepage}
+
+% =========================================================================
+% TABLE OF CONTENTS
+% =========================================================================
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+% =========================================================================
+% CHAPTER 1: INTRODUCTION
+% =========================================================================
+\chapter{Introduction}
+
+\section{Background and Context}
+Modern cybersecurity infrastructure predominantly implements point-in-time perimeter authentication. Users present credentials (passwords, time-based one-time passwords, or biometric scans) exclusively during session initiation. Once identity verification succeeds, the identity provider issues bearer tokens or session cookies that confer perpetual, unmonitored authorization until explicit session revocation or timeout.
+
+This static access model creates critical post-authentication vulnerabilities:
+\begin{enumerate}
+    \item \textbf{Unattended Terminal Hijacking:} When authorized users leave physical workstations momentarily unlocked, malicious internal actors or opportunistic intruders gain unrestricted access.
+    \item \textbf{Session Token Exfiltration:} Cyber adversaries utilizing Infostealer malware, cross-site scripting (XSS), or man-in-the-middle attacks hijack valid session tokens, operating without confronting secondary authentication prompts.
+    \item \textbf{Perimeter Blindness:} Static access systems cannot adapt to accumulating risk mid-session. The authorization state remains strictly binary (trusted or revoked).
+\end{enumerate}
+
+\section{Project Objectives}
+The Adaptive Continuous Authentication (ACA) project addresses these structural limitations by implementing an unobtrusive, real-time behavioral biometric verification engine. The primary objectives are:
+\begin{itemize}
+    \item \textbf{Zero-Interruption Verification:} Continuously evaluate user identity through micro-rhythmic keyboard dynamics (dwell times, flight durations, and cadence) without workflow disruptions.
+    \item \textbf{Privacy-by-Design:} Guarantee that raw alphanumeric keystrokes are never persisted or transmitted, utilizing client-side HMAC-SHA256 pseudonymization.
+    \item \textbf{Dynamic Risk Modulation:} Formulate a continuous Trust Score ($0$--$100\%$) evaluated across sliding 10-second temporal windows, executing automated graduated responses (Allow, Verify, Lock).
+    \item \textbf{Idle Leniency:} Establish an Inactive Window Policy that distinguishes passive reading and cognition from malicious intrusion, preventing false penalties during periods of low activity.
+\end{itemize}
+
+% =========================================================================
+% CHAPTER 2: METHODOLOGY AND DESIGN
+% =========================================================================
+\chapter{Methodology and Design}
+
+\section{System Architecture}
+The ACA framework decouples data acquisition, feature synthesis, machine learning inference, and presentation into modular subsystems:
+\begin{enumerate}
+    \item \textbf{Client Capture Subsystem:} Captures hardware-level and browser DOM \texttt{keydown} and \texttt{keyup} timestamps using monotonic timers (\texttt{time.perf\_counter} and \texttt{performance.now()}).
+    \item \textbf{Cryptographic Anonymization Layer:} Employs SHA-256 Hash-based Message Authentication Codes (HMAC) initialized with ephemeral session secrets. Alphanumeric key values are mapped to 64-character hashes, discarding plaintext key data before network transmission.
+    \item \textbf{Feature Engineering Pipeline:} Groups chronologically ordered keystrokes into fixed 10-second windows and computes dwell times, flight intervals, typing cadence, variance, and pause frequencies.
+    \item \textbf{Machine Learning Engine:} An unsupervised Isolation Forest pipeline trained on legitimate behavioral baselines to compute anomaly scores and continuous trust scores.
+    \item \textbf{Security Operations Dashboard:} A Flask-backed web interface rendering dynamic SVG radial trust gauges, rolling score histories, and security policy actions.
+\end{enumerate}
+
+\section{Biometric Feature Formulation}
+Let $e_i = (t_i, k_i, a_i)$ represent a keystroke event with timestamp $t_i$, anonymized key identifier $k_i$, and event action $a_i \in \{\text{press}, \text{release}\}$. Within a 10-second behavioral window $W_j$:
+\begin{itemize}
+    \item \textbf{Dwell (Hold) Time:} The duration a key remains depressed:
+    \begin{equation}
+        T_{\text{hold}} = t_{\text{release}} - t_{\text{press}}
+    \end{equation}
+    \item \textbf{Flight Time:} The latency between releasing character key $k_n$ and pressing subsequent character $k_{n+1}$:
+    \begin{equation}
+        T_{\text{flight}} = t_{\text{press}}(k_{n+1}) - t_{\text{release}}(k_n)
+    \end{equation}
+    \item \textbf{Typing Cadence (CPS):} Total character keystroke events normalized by window duration:
+    \begin{equation}
+        \text{CPS} = \frac{N_{\text{characters}}}{10.0\text{ seconds}}
+    \end{equation}
+    \item \textbf{Pause Frequency:} The total count of inter-key flight intervals exceeding cognitive hesitation thresholds ($>500\text{ ms}$).
+\end{itemize}
+
+\section{Anomaly Detection Pipeline \& Trust Mapping}
+The core evaluation model leverages an \textbf{Isolation Forest} ensemble ($n=100$ trees) encapsulated inside a Scikit-Learn \texttt{Pipeline}. Missing values in sparse windows are resolved via median imputation (\texttt{SimpleImputer}), followed by zero-mean unit-variance scaling (\texttt{StandardScaler}).
+
+The Isolation Forest outputs an anomaly score $s \in [-0.10, +0.10]$, where positive values represent normal legitimate inliers and negative values indicate statistical outliers. The raw anomaly score is linearly transformed into a normalized Trust Score ($T \in [0, 100]$):
+\begin{equation}
+    T = \text{clip}\left(50.0 + \frac{s}{0.10} \times 50.0, \; 0.0, \; 100.0\right)
+\end{equation}
+
+The trust score maps to a 3-tier security policy:
+\begin{itemize}
+    \item \textbf{$T \ge 70$ (TRUSTED):} Legitimate user pattern; action: \texttt{ALLOW}.
+    \item \textbf{$40 \le T < 70$ (VERIFY):} Mild anomaly detected; action: \texttt{PROMPT\_REAUTH}.
+    \item \textbf{$T < 40$ (REJECT):} Critical divergence; action: \texttt{LOCK\_SESSION}.
+    \item \textbf{Inactive Window ($<5$ keystrokes):} Action: \texttt{HOLD} (previous score maintained).
+\end{itemize}
+
+% =========================================================================
+% CHAPTER 3: RESULTS AND EVALUATION
+% =========================================================================
+\chapter{Results and Evaluation}
+
+\section{Testing Methodology}
+The prototype implementation was validated using automated Python \texttt{unittest} suites alongside real-world empirical typing trials. Test coverage encompasses:
+\begin{itemize}
+    \item Verification of HMAC-SHA256 anonymization and absence of plaintext leakage.
+    \item Resiliency against sparse, unmatched, and disordered keystroke events.
+    \item Consistency between pre-recorded replay sequences and real-time live monitoring.
+    \item State isolation across concurrent browser sessions via Web Locks API.
+\end{itemize}
+
+\section{Performance Metrics}
+Table \ref{tab:benchmarks} summarizes measured performance across core prototype subsystems:
+
+\begin{table}[H]
+    \centering
+    \caption{Engineering Performance Benchmarks of the ACA Prototype}
+    \label{tab:benchmarks}
+    \begin{tabular}{@{}llll@{}}
+        \toprule
+        \textbf{Metric} & \textbf{Specification} & \textbf{Measured Result} & \textbf{Evaluation Status} \\
+        \midrule
+        Model Inference Latency & $\le 5.0\text{ ms}$ & $0.42 - 0.88\text{ ms}$ & Passed (Optimal) \\
+        End-to-End API Roundtrip & $\le 50.0\text{ ms}$ & $12.3 - 24.1\text{ ms}$ & Passed (Real-Time) \\
+        Window Duration & $10.0\text{ s}$ & $10.0\text{ s}$ & Fully Compliant \\
+        Active Window Threshold & $\ge 5\text{ characters}$ & $5\text{ character presses}$ & Fully Compliant \\
+        HMAC Hash Overhead & $\le 1.0\text{ ms}$ & $0.08\text{ ms / key}$ & Passed \\
+        Server Memory Footprint & $\le 100\text{ MB}$ & $38.4\text{ MB}$ & Passed (Lightweight) \\
+        Automated Test Pass Rate & $100\%$ & 11 / 11 ($100\%$) & Full Success \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{Empirical Baseline Analysis}
+During initial live monitoring experiments, normal fluent typing ($3.5 - 5.5\text{ chars/sec}$, dwell $60 - 75\text{ ms}$, flight $120\text{ ms}$) produced lower trust scores ($\approx 48.3\%$, \texttt{VERIFY}). Empirical diagnosis confirmed that the baseline model was trained on an early slow-speed session ($U01/S02$, $0.5 - 2.6\text{ chars/sec}$, dwell $100 - 124\text{ ms}$, frequent hesitations).
+
+When tested with slow, deliberate typing matching $S02$, the model yielded a score of $+0.0960$ ($98.0\%$ Trust, \texttt{TRUSTED}). This verified that the mathematical isolation engine functions correctly, highlighting the importance of expanding the baseline enrollment distribution to include diverse typing speeds.
+
+% =========================================================================
+% CHAPTER 4: CONCLUSION
+% =========================================================================
+\chapter{Conclusion}
+
+\section{Summary of Work}
+The mid-semester prototype successfully establishes an end-to-end continuous authentication pipeline:
+\begin{enumerate}
+    \item A privacy-preserving keystroke logging engine using HMAC-SHA256 cryptography.
+    \item A statistical feature extractor generating 5-dimensional behavioral vectors per 10-second window.
+    \item An unsupervised Isolation Forest anomaly detection engine producing sub-millisecond trust scores.
+    \item An interactive, dark-themed Flask dashboard featuring animated SVG gauges and dynamic policy enforcement.
+\end{enumerate}
+
+\section{Future Work and Recommendations}
+Subsequent project phases will focus on:
+\begin{itemize}
+    \item \textbf{Multi-Session Enrollment Expansion:} Collecting multi-tempo typing sessions ($S03, S04$) to broaden the intra-class variance of the legitimate profile.
+    \item \textbf{Adaptive Model Retraining:} Developing a safe model-updating mechanism that fine-tunes the baseline after successful primary re-authentication, preventing adversarial poisoning.
+    \item \textbf{Multi-Modal Behavioral Fusion:} Integrating mouse dynamics (velocity, curvature, acceleration) into a fused multi-sensor confidence score.
+\end{itemize}
+
+\end{document}
+

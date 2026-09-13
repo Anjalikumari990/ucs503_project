@@ -1,0 +1,72 @@
+site_name: "Adaptive Continuous Authentication - UCS503P"
+site_description: "Adaptive Continuous Authentication & Account-Takeover Detection Using Keystroke Behavioral Intelligence"
+site_url: "https://github.com/Anjalikumari990/ucs503_project"
+
+plugins:
+  - search
+
+theme:
+  name: material
+  features:
+    - navigation.footer
+    - header.autohide
+    - content.tabs.link
+    - navigation.tracking
+    - navigation.top
+    - toc.integrate
+    - content.tooltips
+  palette:
+    - scheme: slate
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  logo: assets/tiet-logo.svg
+  favicon: assets/favicon.png
+
+repo_url: https://github.com/Anjalikumari990/ucs503_project
+repo_name: ucs503_project
+copyright: "Copyright &copy; 2026 Yatharth Kansal, Anjali Kumari, Ridhi Batra &bull; UCS503P Software Engineering Project &bull; TIET"
+
+extra_css:
+  - assets/stylesheets/extra.css
+  - https://unpkg.com/katex@0/dist/katex.min.css
+
+extra_javascript:
+  - https://unpkg.com/katex@0/dist/katex.min.js
+
+markdown_extensions:
+  - abbr
+  - md_in_html
+  - attr_list
+  - toc:
+      permalink: true
+      toc_depth: 4
+  - footnotes
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - sane_lists
+
+nav:
+  - Overview: index.md
+  - Project Selection: criteria-for-project-selection.md
+  - Recording & Demo: recording-and-demo-checklist.md
+

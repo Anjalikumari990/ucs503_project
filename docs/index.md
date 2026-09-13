@@ -1,40 +1,58 @@
-﻿![Tiet Logo](assets/tiet-logo.svg){ .tiet-logo }
+![Tiet Logo](assets/tiet-logo.svg){ .tiet-logo }
 
-**UCS503: Software Engineering (Project)**  
-**TIET Patiala**
+**UCS503P: Software Engineering Project**  
+**Thapar Institute of Engineering and Technology, Patiala**
 
-# The Sum Function in C++
+# Adaptive Continuous Authentication & Account-Takeover Detection
 
-**Author(s)**:
+**Supervised by**: Prof. Asif (Dr. Jeelani Asif)  
+**Authors**:
+- **Yatharth Kansal** (`1024030456`) `<ykansal_be24@thapar.edu>`
+- **Anjali Kumari** (`1024030457`) `<akumari_be24@thapar.edu>`
+- **Ridhi Batra** (`1024030464`) `<rbatra_be24@thapar.edu>`
 
-`(RGB)` Raghav B. Venkataramaiyer `<bv.raghav -at-
-thapar -dot- edu>`
+---
 
-This project creates a sum function in c++ as a sample
-to illustrate how to compile a shared library and
-distribute it for use along with the binary.
+## 📌 Executive Summary
 
-## Installation
+Modern enterprise security is vulnerable to post-authentication compromises:
+1. **Unattended workstation takeovers:** Physically accessible unlocked systems.
+2. **Session hijacking:** Stolen active bearer tokens or cookies bypass login credentials.
+3. **Static perimeter blindspots:** Lack of mid-session identity verification.
 
-``` shell
-make -C code
+**Adaptive Continuous Authentication (ACA)** delivers a **Zero-Trust behavioral intelligence layer** that continuously monitors user keystroke dynamics (dwell time, flight duration, typing cadence, and hesitation frequencies) across 10-second sliding behavioral windows. 
+
+ACA computes a dynamic **Trust Score (0–100%)** using an unsupervised **Isolation Forest** pipeline and executes automated policy responses: transparent access (`ALLOW`), step-up re-authentication (`PROMPT_REAUTH`), or immediate session restriction (`LOCK_SESSION`).
+
+---
+
+## 🏗️ Architectural Flow
+
+```
+[Keystroke Events] ──▶ [HMAC-SHA256 Anonymizer] ──▶ [10s Window Extractor]
+                                                             │
+                                                             ▼
+[Security Dashboard] ◀── [Policy Engine] ◀── [Trust Scorer] ◀── [Isolation Forest]
 ```
 
-This will create create a folder `dist` in `code`
-folder, with following contents
+### Privacy Guarantee
+Actual alphanumeric keystroke content is **never recorded or transmitted**. Client-side HMAC-SHA256 pseudonymization ensures zero-plaintext persistence.
 
-```
-dist
- +-lib
- |  \-libbvr_math.so
- +-bin
-    \-run
-```
+---
 
-## Usage
+## 📊 Engineering Diagrams & Specifications
 
-``` shell
-cd code
-export LD_LIBRARY_PATH=dist/lib
-./dist/bin/run
-```
+- **Level 0 & 1 Data Flow Diagram (DFD):** [View Diagram](Diagrams/DFD%20level%200%20and%201.jpg)
+- **Level 2 Data Flow Diagram (DFD):** [View Diagram](Diagrams/DFD_Level_2_ACA.jpg)
+- **UML Use Case Diagram:** [View Diagram](Diagrams/usecase_Diagram.jpg)
+- **Database ER Diagram:** [View PDF](Diagrams/ACA_ER_Diagram.pdf)
+- **Swimlane Activity Diagram:** [View PDF](Diagrams/ACA_Swimlane.pdf)
+- **Master Gantt Schedule:** [View PDF](ACA_Gantt_Chart.pdf)
+
+---
+
+## 🚀 Quick Navigation
+
+- [Project Selection Criteria](criteria-for-project-selection.md)
+- [Recording & Demonstration Checklist](recording-and-demo-checklist.md)
+- [Project Repository on GitHub](https://github.com/Anjalikumari990/ucs503_project)

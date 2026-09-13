@@ -17,7 +17,11 @@ venv/
 code/data/raw/
 code/data/processed/*
 !code/data/processed/keyboard_window_features.csv
-code/data/key_hash_secret.bin
+**/key_hash_secret.bin
 code/venv/
 code/**/__pycache__/
 code/**/*.py[cod]
+
+# Temporary build scripts & scratch files
+scratch/
+
