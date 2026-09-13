@@ -25,3 +25,7 @@ code/**/*.py[cod]
 # Temporary build scripts & scratch files
 scratch/
 
+# MkDocs generated site output
+site/
+
+

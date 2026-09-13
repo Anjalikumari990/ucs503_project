@@ -264,10 +264,25 @@ python -m unittest discover -s code/tests -v
 ### 6. Serving Documentation Locally (MkDocs)
 
 To preview the academic documentation site with TIET branding and interactive navigation:
-```bash
-make docs
+
+**Windows (PowerShell):**
+```powershell
+# 1. Activate your virtual environment
+.\venv\Scripts\Activate.ps1
+
+# 2. Run the local docs server (either command works)
+mkdocs serve
+# or: .\make.bat docs
 ```
-Access the documentation at: `http://localhost:8000`
+
+**Linux / macOS:**
+```bash
+source venv/bin/activate
+make docs
+# or: mkdocs serve
+```
+
+Access the live documentation in your browser at: **[http://localhost:8000](http://localhost:8000)**
 
 ---
 

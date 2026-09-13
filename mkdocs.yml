@@ -1,6 +1,6 @@
 site_name: "Adaptive Continuous Authentication - UCS503P"
 site_description: "Adaptive Continuous Authentication & Account-Takeover Detection Using Keystroke Behavioral Intelligence"
-site_url: "https://github.com/Anjalikumari990/ucs503_project"
+site_url: ""
 
 plugins:
   - search
@@ -68,5 +68,10 @@ markdown_extensions:
 nav:
   - Overview: index.md
   - Project Selection: criteria-for-project-selection.md
+  - Weekly Journals:
+      - "Yatharth Kansal (1024030456)": journals/1024030456-yatharth/journal.md
+      - "Anjali Kumari (1024030457)": journals/1024030457-anjali/journal.md
+      - "Ridhi Batra (1024030464)": journals/1024030464-ridhi/journal.md
   - Recording & Demo: recording-and-demo-checklist.md
+
 
