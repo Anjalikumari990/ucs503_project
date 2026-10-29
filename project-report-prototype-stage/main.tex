@@ -1,0 +1,112 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{hyperref}
+\definecolor{navy}{HTML}{17324D}
+\definecolor{teal}{HTML}{158575}
+\definecolor{pale}{HTML}{EDF4F3}
+\hypersetup{colorlinks=true,linkcolor=navy,urlcolor=navy}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{3em}
+\newcommand{\modulebox}[3]{\raisebox{\depth}{\fcolorbox{teal}{pale}{\parbox[c][#2mm][c]{#1mm}{\centering\small #3}}}}
+\begin{document}
+{\small\sffamily\color{teal} UCS503P\quad /\quad MID-SEMESTER REVIEW}\par
+{\LARGE\bfseries\color{navy} Adaptive Continuous Authentication}\par
+{\Large\bfseries Prototype Stage Report}\par
+\vspace{2pt}
+Anjali Kumari (1024030457)\quad Yatharth Kansal (1024030456)\\
+Ridhi Batra (1024030464)\par
+{\small Thapar Institute of Engineering and Technology\\
+Submitted to: Prof. Asif\hspace{1em}13 September 2026}\par
+{\color{teal}\rule{\linewidth}{0.8pt}}
+
+\section{Introduction}
+The current prototype connects keyboard activity to a trust score on a web dashboard. This report records the modules completed, the checks performed and the work remaining at the prototype stage.
+
+\section{Methodology and Design}
+\subsection*{Implemented modules}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{12.6cm}@{}}
+\hline
+\textbf{Module} & \textbf{Current implementation}\\
+\hline
+Login and interface & Flask login page, typing area, trust graph and decision history.\\
+Typing measurements & Key timings, typing speed and pauses grouped into 10-second windows.\\
+Model and scoring & Saved Isolation Forest model connected to a 0--100 trust score and recommendation.\\
+Recorded replay & Stored feature windows can be played through the same scoring engine.\\
+\hline
+\end{tabular}
+
+\subsection*{Integration completed}
+Live typing and recorded replay provide two ways to demonstrate the prototype. Both reach the same scoring engine and display their results on the dashboard.
+
+\begin{figure}[h]
+\centering
+\setlength{\unitlength}{1mm}
+\begin{picture}(154,42)
+\put(0,28){\modulebox{42}{7}{Live timings}}%
+\put(0,5){\modulebox{42}{7}{Recorded windows}}%
+\put(45,33){\line(1,0){10}}%
+\put(45,10){\line(1,0){10}}%
+\put(55,10){\line(0,1){23}}%
+\put(55,21){\vector(1,0){9}}%
+\put(64,15){\modulebox{39}{10}{Scoring engine}}%
+\put(106,21){\vector(1,0){8}}%
+\put(114,15){\modulebox{36}{10}{Dashboard result}}%
+\end{picture}
+\caption{The two implemented input paths share one scoring engine.}
+\end{figure}
+Live capture is limited to the dashboard typing area. The browser sends timing information and coded key identifiers without sending the typed text.
+
+\newpage
+{\small\sffamily\color{teal} PROTOTYPE REVIEW\quad /\quad OBSERVATIONS AND STATUS}\par
+{\color{teal}\rule{\linewidth}{0.6pt}}
+\section{Results and Evaluation}
+The repository's automated checks cover login, typing measurements, replay, idle input and session handling. The previous local validation completed with all 11 tests passing.
+
+\begin{figure}[h]
+\centering
+\setlength{\unitlength}{1mm}
+\begin{picture}(154,49)
+\put(0,29){\modulebox{43}{12}{Login and\\session checks}}%
+\put(53,29){\modulebox{43}{12}{Typing and\\idle-input checks}}%
+\put(106,29){\modulebox{43}{12}{Recorded replay\\consistency checks}}%
+\put(23,29){\line(0,-1){8}}%
+\put(76,29){\line(0,-1){8}}%
+\put(129,29){\line(0,-1){8}}%
+\put(23,21){\line(1,0){106}}%
+\put(76,21){\vector(0,-1){8}}%
+\put(37,0){\modulebox{75}{10}{11 automated checks passed}}%
+\end{picture}
+\caption{Software checks used to review the prototype.}
+\end{figure}
+
+\subsection*{Observed outcomes}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{12.6cm}@{}}
+\hline
+\textbf{Check} & \textbf{Observation}\\
+\hline
+Recorded playback & All seven stored windows produced results consistent with the backend.\\
+Typing measurements & Controlled input produced the expected timing values.\\
+Inactive input & The previous trust score and recommendation were preserved.\\
+Session handling & Login, invalid inputs, separate sessions and logout were checked.\\
+\hline
+\end{tabular}
+
+\begin{figure}[h]
+\centering
+\setlength{\unitlength}{1mm}
+\begin{picture}(154,30)
+\put(4,5){\modulebox{58}{16}{Last active replay window\\Trust: 73.88}}%
+\put(66,14){\vector(1,0){20}}%
+\put(89,5){\modulebox{58}{16}{Next window: inactive\\Trust retained: 73.88}}%
+\end{picture}
+\caption{One observed replay result: inactivity keeps the previous score.}
+\end{figure}
+These checks establish the software's behavior. The model uses only six active training windows, so authentication accuracy has not been established. The displayed score is not a probability of user identity.
+
+\section{Conclusion and Pending Work}
+The completed result is a working demonstration of typing input, scoring and dashboard feedback. Re-authentication and locking are recommendations only. More recording sessions, evaluation on unseen sessions and actual response enforcement remain pending.
+\end{document}
